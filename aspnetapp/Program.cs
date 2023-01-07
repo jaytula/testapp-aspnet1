@@ -1,4 +1,10 @@
+using System;
+var port = int.Parse(Environment.GetEnvironmentVariable("PORT") ?? "8080");
+
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseKestrel(options => {
+    options.ListenAnyIP(port);
+});
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
