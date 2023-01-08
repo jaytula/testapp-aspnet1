@@ -1,8 +1,10 @@
-using System;
+using Newtonsoft.Json;
+
 var port = int.Parse(Environment.GetEnvironmentVariable("PORT") ?? "8080");
 
 var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseKestrel(options => {
+builder.WebHost.UseKestrel(options =>
+{
     options.ListenAnyIP(port);
 });
 
@@ -33,6 +35,18 @@ app.MapControllerRoute(
 app.MapGet("/Environment", () =>
 {
     return new EnvironmentInfo();
+});
+
+app.MapPost("/AuthLogin", context =>
+{
+    var data = new
+    {
+        Message = "Hello, World!",
+        Timestamp = DateTime.UtcNow
+    };
+
+    string json = JsonConvert.SerializeObject(data);
+    return context.Response.WriteAsJsonAsync(json);
 });
 
 app.Run();
