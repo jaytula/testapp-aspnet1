@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 
+
 var port = int.Parse(Environment.GetEnvironmentVariable("PORT") ?? "8080");
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,16 +37,34 @@ app.MapGet("/Environment", () =>
     return new EnvironmentInfo();
 });
 
-app.MapPost("/AuthLogin", context =>
+app.MapPost("/AuthLogin", async context =>
 {
+    // Read the request body into a string    
+    MyData? postData = await context.Request.ReadFromJsonAsync<MyData>();
+
     var data = new
     {
+        PostData = postData,
         Message = "Hello, World!",
         Timestamp = DateTime.UtcNow
     };
 
     string json = JsonConvert.SerializeObject(data);
-    return context.Response.WriteAsJsonAsync(json);
+
+
+    // Set the response status code and content
+    context.Response.StatusCode = 200;
+    context.Response.ContentType = "application/json";
+
+    // Write the response to the body
+    await context.Response.WriteAsync(json);
+
 });
 
 app.Run();
+
+
+public class MyData
+{
+    public string? authdata { get; set; }
+}
